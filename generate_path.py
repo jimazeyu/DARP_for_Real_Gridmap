@@ -208,7 +208,7 @@ def win_loop():
     cv2.createTrackbar('xBias', 'Control Bar', 25, 50, nothing)
     cv2.createTrackbar('yBias', 'Control Bar', 25, 50, nothing)
     # generate the path
-    cv2.createTrackbar('switch', 'Control Bar', 0, 1, generate_path)
+    cv2.createTrackbar('generate', 'Control Bar', 0, 1, generate_path)
 
     # show the map
     cv2.namedWindow('Process the map')
