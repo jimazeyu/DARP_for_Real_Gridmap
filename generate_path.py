@@ -100,11 +100,10 @@ def process_map():
     # inflate the map 
     kernel = np.ones((inflation_radius, inflation_radius), np.uint8)
     inflated_map = cv2.erode(origin_map, kernel, iterations=1)
-    processed_map = inflated_map.copy()
     
     # convert the map to RGB
-    origin_map_fake = cv2.cvtColor(origin_map_fake, cv2.COLOR_GRAY2BGR)
-    processed_map = cv2.cvtColor(processed_map, cv2.COLOR_GRAY2BGR)
+    origin_map_fake = cv2.cvtColor(inflated_map, cv2.COLOR_GRAY2BGR)
+    processed_map = cv2.cvtColor(inflated_map, cv2.COLOR_GRAY2BGR)
 
     # draw navigation points
     for i in range(map_height//each_grid_len):
@@ -117,8 +116,8 @@ def process_map():
             for k in range(-1,2,2):
                 for l in range(-1,2,2):
                     # calculate the position of the corner
-                    x_corner = x + k*each_grid_len//2
-                    y_corner = y + l*each_grid_len//2
+                    x_corner = x + k*each_grid_len//4
+                    y_corner = y + l*each_grid_len//4
                     # judge if the corner is in the map
                     if x_corner < 0 or x_corner >= map_height or y_corner < 0 or y_corner >= map_width:
                         occ_tag = 1
@@ -133,15 +132,17 @@ def process_map():
             # draw the navigation points
             for k in range(-1,2,2):
                 for l in range(-1,2,2):
-                    # calculate the position of the corner
-                    x_corner = x + k*each_grid_len//2
-                    y_corner = y + l*each_grid_len//2
                     # draw the navigation point
-                    cv2.circle(origin_map_fake, (y_corner, x_corner), 2, (0, 0, 255), -1)
+                    cv2.circle(origin_map_fake, (y- each_grid_len//4, x- each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(origin_map_fake, (y- each_grid_len//4, x+ each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(origin_map_fake, (y+ each_grid_len//4, x- each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(origin_map_fake, (y+ each_grid_len//4, x+ each_grid_len//4), 2, (0, 0, 255), -1)
                     cv2.rectangle(origin_map_fake, (y - each_grid_len//2, x - each_grid_len//2), (y + each_grid_len//2, x + each_grid_len//2), (255, 0, 0), 1)
                     # draw the center point
-                    cv2.circle(processed_map, (y_corner, x_corner), 2, (0, 0, 255), -1)
-                    cv2.rectangle(processed_map, (y - each_grid_len//2, x - each_grid_len//2), (y + each_grid_len//2, x + each_grid_len//2), (0, 0, 255), 1)
+                    cv2.circle(processed_map, (y- each_grid_len//4, x- each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(processed_map, (y- each_grid_len//4, x+ each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(processed_map, (y+ each_grid_len//4, x- each_grid_len//4), 2, (0, 0, 255), -1)
+                    cv2.circle(processed_map, (y+ each_grid_len//4, x+ each_grid_len//4), 2, (0, 0, 255), -1)
             
     # draw the robot position
     for i in range(robot_numbers):
@@ -149,7 +150,7 @@ def process_map():
         y_robot = robot_place[i]%(map_width//each_grid_len)
         x_robot = x_robot*each_grid_len + each_grid_len//2 + x_bias
         y_robot = y_robot*each_grid_len + each_grid_len//2 + y_bias
-        cv2.circle(processed_map, (y_robot, x_robot), 2, (0, 255, 0), -1)
+        cv2.circle(origin_map_fake, (y_robot, x_robot), 2, (0, 255, 0), -1)
 
     # start the window
     processed_map = np.vstack(
@@ -190,8 +191,8 @@ def generate_path(x):
         path_name = "./path/path_"+str(i)+".txt"
         f = open(path_name, "w")
         for x1, y1, x2, y2 in path:
-            x1 = x1*each_grid_len*resolution/2+origin[1]+x_bias*resolution
-            y1 = y1*each_grid_len*resolution/2+origin[0]+y_bias*resolution
+            x1 = x1*each_grid_len*resolution/2+each_grid_len*resolution/4+origin[1]+x_bias*resolution
+            y1 = y1*each_grid_len*resolution/2+each_grid_len*resolution/4+origin[0]+y_bias*resolution
             x1 = round(x1, 2)
             y1 = round(y1, 2)
             f.write(str(x1)+" "+str(y1)+"\n")
