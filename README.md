@@ -10,7 +10,7 @@ I write a simple GUI with opencv-python to transfer ROS occupancy map into small
 
 
 # Reference
-reference to [DARP](https://github.com/alice-st/DARP)
+Code inherits from [DARP](https://github.com/alice-st/DARP)
 
 # How to use
 1. Install the required packages.
